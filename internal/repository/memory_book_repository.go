@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"go-rest-challenge/internal/domain"
+	"sort"
 	"sync"
 )
 
@@ -46,6 +47,12 @@ func (r *MemoryBookRepository) GetAll() []domain.Book {
 	for _, b := range r.books {
 		books = append(books, b)
 	}
+
+	// Sort by ID to ensure stable pagination
+	sort.Slice(books, func(i, j int) bool {
+		return books[i].ID < books[j].ID
+	})
+
 	return books
 }
 
