@@ -118,11 +118,6 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		Year   int    `json:"year"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		writeError(w, 400, "invalid body")
-		return
-	}
-
 	book, err := h.usecase.Update(id, input.Title, input.Author, input.Year)
 	if err != nil {
 		// If book does not exist → 404
