@@ -56,13 +56,14 @@ func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Title  string `json:"title"`
 		Author string `json:"author"`
+		Year   int    `json:"year"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		writeError(w, 400, "invalid body")
 		return
 	}
 
-	book, err := h.usecase.Create(input.Title, input.Author)
+	book, err := h.usecase.Create(input.Title, input.Author, input.Year)
 	if err != nil {
 		writeError(w, 400, err.Error())
 		return
@@ -104,6 +105,7 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Title  string `json:"title"`
 		Author string `json:"author"`
+		Year   int    `json:"year"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -111,7 +113,7 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	book, err := h.usecase.Update(id, input.Title, input.Author)
+	book, err := h.usecase.Update(id, input.Title, input.Author, input.Year)
 	if err != nil {
 		writeError(w, 400, err.Error())
 		return
@@ -133,15 +135,13 @@ func (h *Handler) Token(w http.ResponseWriter, r *http.Request) {
 	var req authRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"error":"invalid json"}`))
+		writeError(w, 400, "invalid json")
 		return
 	}
 
 	// simple hardcoded auth (for challenge)
 	if req.Username != "admin" || req.Password != "password" {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(`{"error":"invalid credentials"}`))
+		writeError(w, 401, "invalid credentials")
 		return
 	}
 
@@ -149,8 +149,7 @@ func (h *Handler) Token(w http.ResponseWriter, r *http.Request) {
 		Token: "supertoken",
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	writeJSON(w, 200, resp)
 }
 
 func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {

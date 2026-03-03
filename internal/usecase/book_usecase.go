@@ -16,11 +16,11 @@ func NewBookUsecase(r repository.BookRepository) *BookUsecase {
 	return &BookUsecase{repo: r}
 }
 
-func (u *BookUsecase) Create(title, author string) (domain.Book, error) {
+func (u *BookUsecase) Create(title, author string, year int) (domain.Book, error) {
 	if strings.TrimSpace(title) == "" || strings.TrimSpace(author) == "" {
 		return domain.Book{}, errors.New("title and author required")
 	}
-	return u.repo.Create(domain.Book{Title: title, Author: author}), nil
+	return u.repo.Create(domain.Book{Title: title, Author: author, Year: year}), nil
 }
 
 func (u *BookUsecase) GetAll(author, pageStr, limitStr string) []domain.Book {
@@ -61,11 +61,11 @@ func (u *BookUsecase) GetByID(id int) (domain.Book, error) {
 	return u.repo.GetByID(id)
 }
 
-func (u *BookUsecase) Update(id int, title, author string) (domain.Book, error) {
+func (u *BookUsecase) Update(id int, title, author string, year int) (domain.Book, error) {
 	if title == "" || author == "" {
 		return domain.Book{}, errors.New("invalid input")
 	}
-	return u.repo.Update(id, domain.Book{Title: title, Author: author})
+	return u.repo.Update(id, domain.Book{Title: title, Author: author, Year: year})
 }
 
 func (u *BookUsecase) Delete(id int) error {
