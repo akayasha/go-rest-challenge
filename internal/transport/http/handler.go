@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"github.com/gorilla/mux"
 	"go-rest-challenge/internal/domain"
 	"go-rest-challenge/internal/repository"
 	"io"
@@ -103,7 +104,9 @@ func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
 
 // Level 4
 func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.PathValue("id"))
+	// Get path variables from mux
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		writeError(w, 400, "invalid id")
 		return
@@ -122,13 +125,13 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	book, err := h.usecase.Update(id, input.Title, input.Author, input.Year)
 	if err != nil {
-
-		// 🔥 THIS IS THE IMPORTANT PART
+		// If book does not exist → 404
 		if errors.Is(err, repository.ErrNotFound) {
 			writeError(w, 404, "not found")
 			return
 		}
 
+		// Invalid input → 400
 		writeError(w, 400, err.Error())
 		return
 	}
