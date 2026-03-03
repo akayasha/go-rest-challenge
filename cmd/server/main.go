@@ -2,17 +2,16 @@ package main
 
 import (
 	"context"
+	"github.com/gorilla/mux"
+	"go-rest-challenge/internal/repository"
+	"go-rest-challenge/internal/usecase"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/gorilla/mux"
-	"go-rest-challenge/internal/middleware"
-	"go-rest-challenge/internal/repository"
 	httpTransport "go-rest-challenge/internal/transport/http"
-	"go-rest-challenge/internal/usecase"
 )
 
 func main() {
@@ -22,21 +21,18 @@ func main() {
 
 	r := mux.NewRouter()
 
-	// Public routes
 	r.HandleFunc("/ping", handler.Ping).Methods("GET")
 	r.HandleFunc("/echo", handler.Echo).Methods("POST")
 	r.HandleFunc("/auth/token", handler.Token).Methods("POST")
 
-	// Public POST to create book
 	r.HandleFunc("/books", handler.CreateBook).Methods("POST")
+	//r.Handle("/books", middleware.Auth(http.HandlerFunc(handler.GetBooks))).Methods("GET")
 
-	// Protected GET routes
-	protected := r.NewRoute().Subrouter()
-	protected.Use(middleware.Auth) // Apply auth middleware
-	//protected.HandleFunc("/books", handler.GetBooks).Methods("GET")
-	protected.HandleFunc("/books/{id}", handler.GetBookByID).Methods("GET")
-	protected.HandleFunc("/books/{id}", handler.UpdateBook).Methods("PUT")
-	protected.HandleFunc("/books/{id}", handler.DeleteBook).Methods("DELETE")
+	r.HandleFunc("/books", handler.GetBooks).Methods("GET")
+
+	r.HandleFunc("/books/{id}", handler.GetBookByID).Methods("GET")
+	r.HandleFunc("/books/{id}", handler.UpdateBook).Methods("PUT")
+	r.HandleFunc("/books/{id}", handler.DeleteBook).Methods("DELETE")
 
 	server := &http.Server{
 		Addr:              ":8099",
