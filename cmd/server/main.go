@@ -33,7 +33,7 @@ func main() {
 	mux.HandleFunc("DELETE /books/{id}", handler.DeleteBook)
 
 	server := &http.Server{
-		Addr:              ":8080",
+		Addr:              ":8099",
 		Handler:           mux,
 		ReadTimeout:       5 * time.Second,
 		WriteTimeout:      5 * time.Second,
@@ -42,7 +42,7 @@ func main() {
 	}
 
 	go func() {
-		log.Println("Server running on :8080")
+		log.Println("Server running on :8099")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}

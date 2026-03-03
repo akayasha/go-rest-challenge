@@ -133,7 +133,7 @@ go test -bench=. -benchmem ./...
 
 Load test example:
 
-wrk -t8 -c100 -d30s http://localhost:8080/ping
+wrk -t8 -c100 -d30s http://localhost:8099/ping
 
 Expected performance (optimized version):
 
