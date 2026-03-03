@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/gorilla/mux"
 	"go-rest-challenge/internal/repository"
 	"go-rest-challenge/internal/usecase"
 	"log"
@@ -19,22 +20,22 @@ func main() {
 	uc := usecase.NewBookUsecase(repo)
 	handler := httpTransport.NewHandler(uc)
 
-	mux := http.NewServeMux()
+	r := mux.NewRouter()
 
-	mux.HandleFunc("GET /ping", handler.Ping)
-	mux.HandleFunc("POST /echo", handler.Echo)
-	mux.HandleFunc("POST /auth/token", handler.Token)
+	r.HandleFunc("/ping", handler.Ping).Methods("GET")
+	r.HandleFunc("/echo", handler.Echo).Methods("POST")
+	r.HandleFunc("/auth/token", handler.Token).Methods("POST")
 
-	mux.HandleFunc("POST /books", handler.CreateBook)
-	mux.Handle("GET /books", middleware.Auth(http.HandlerFunc(handler.GetBooks)))
+	r.HandleFunc("/books", handler.CreateBook).Methods("POST")
+	r.Handle("/books", middleware.Auth(http.HandlerFunc(handler.GetBooks))).Methods("GET")
 
-	mux.HandleFunc("GET /books/{id}", handler.GetBookByID)
-	mux.HandleFunc("PUT /books/{id}", handler.UpdateBook)
-	mux.HandleFunc("DELETE /books/{id}", handler.DeleteBook)
+	r.HandleFunc("/books/{id}", handler.GetBookByID).Methods("GET")
+	r.HandleFunc("/books/{id}", handler.UpdateBook).Methods("PUT")
+	r.HandleFunc("/books/{id}", handler.DeleteBook).Methods("DELETE")
 
 	server := &http.Server{
 		Addr:              ":8099",
-		Handler:           mux,
+		Handler:           r,
 		ReadTimeout:       5 * time.Second,
 		WriteTimeout:      5 * time.Second,
 		IdleTimeout:       30 * time.Second,
@@ -42,7 +43,7 @@ func main() {
 	}
 
 	go func() {
-		log.Println("Server running on :8000")
+		log.Println("Server running on :8099")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}

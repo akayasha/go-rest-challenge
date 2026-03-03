@@ -80,7 +80,6 @@ func (u *BookUsecase) Update(id int, title, author string, year int) (domain.Boo
 
 	book, err := u.repo.Update(id, domain.Book{Title: title, Author: author, Year: year})
 	if err != nil {
-		// propagate repository not found
 		if errors.Is(err, repository.ErrNotFound) {
 			return domain.Book{}, repository.ErrNotFound
 		}
