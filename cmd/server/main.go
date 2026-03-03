@@ -33,7 +33,7 @@ func main() {
 	// Protected GET routes
 	protected := r.NewRoute().Subrouter()
 	protected.Use(middleware.Auth) // Apply auth middleware
-	protected.HandleFunc("/books", handler.GetBooks).Methods("GET")
+	//protected.HandleFunc("/books", handler.GetBooks).Methods("GET")
 	protected.HandleFunc("/books/{id}", handler.GetBookByID).Methods("GET")
 	protected.HandleFunc("/books/{id}", handler.UpdateBook).Methods("PUT")
 	protected.HandleFunc("/books/{id}", handler.DeleteBook).Methods("DELETE")
