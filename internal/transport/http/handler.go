@@ -18,8 +18,9 @@ func NewHandler(u *usecase.BookUsecase) *Handler {
 
 // Level 1
 func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"pong"}`))
+	w.Write([]byte(`{"success":true}`))
 }
 
 // Level 2
