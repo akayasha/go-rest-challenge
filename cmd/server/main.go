@@ -25,12 +25,14 @@ func main() {
 	mux.HandleFunc("POST /echo", handler.Echo)
 	mux.HandleFunc("POST /auth/token", handler.Token)
 
-	mux.HandleFunc("POST /books", handler.CreateBook)
+	// Wrap the entire resource or individual methods consistently
+	mux.Handle("POST /books", middleware.Auth(http.HandlerFunc(handler.CreateBook)))
 	mux.Handle("GET /books", middleware.Auth(http.HandlerFunc(handler.GetBooks)))
 
-	mux.HandleFunc("GET /books/{id}", handler.GetBookByID)
-	mux.HandleFunc("PUT /books/{id}", handler.UpdateBook)
-	mux.HandleFunc("DELETE /books/{id}", handler.DeleteBook)
+	// Don't forget the ID-based routes if the challenge requires it!
+	mux.Handle("GET /books/{id}", middleware.Auth(http.HandlerFunc(handler.GetBookByID)))
+	mux.Handle("PUT /books/{id}", middleware.Auth(http.HandlerFunc(handler.UpdateBook)))
+	mux.Handle("DELETE /books/{id}", middleware.Auth(http.HandlerFunc(handler.DeleteBook)))
 
 	server := &http.Server{
 		Addr:              ":8099",
