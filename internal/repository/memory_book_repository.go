@@ -40,11 +40,11 @@ func (r *MemoryBookRepository) GetAll() []domain.Book {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	result := make([]domain.Book, 0, len(r.books))
+	books := make([]domain.Book, 0, len(r.books))
 	for _, b := range r.books {
-		result = append(result, b)
+		books = append(books, b)
 	}
-	return result
+	return books
 }
 
 func (r *MemoryBookRepository) GetByID(id int) (domain.Book, error) {

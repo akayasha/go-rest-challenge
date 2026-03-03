@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"go-rest-challenge/internal/domain"
 	"io"
 	"net/http"
 	"strconv"
@@ -72,6 +73,7 @@ func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 
 	author := r.URL.Query().Get("author")
 	page := r.URL.Query().Get("page")
@@ -79,7 +81,10 @@ func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
 
 	books := h.usecase.GetAll(author, page, limit)
 
-	w.WriteHeader(http.StatusOK)
+	if books == nil {
+		books = []domain.Book{}
+	}
+
 	json.NewEncoder(w).Encode(books)
 }
 
