@@ -29,13 +29,12 @@ func (u *BookUsecase) GetAll(author, pageStr, limitStr string) []domain.Book {
 		allBooks = []domain.Book{}
 	}
 
-	// Filter - use substring matching for more flexibility
-	author = strings.TrimSpace(author)
+	// Filter by author
 	filtered := []domain.Book{}
+	author = strings.TrimSpace(author)
 	if author != "" {
 		authorLower := strings.ToLower(author)
 		for _, b := range allBooks {
-			// Substring match (case-insensitive)
 			if strings.Contains(strings.ToLower(strings.TrimSpace(b.Author)), authorLower) {
 				filtered = append(filtered, b)
 			}
@@ -44,23 +43,18 @@ func (u *BookUsecase) GetAll(author, pageStr, limitStr string) []domain.Book {
 		filtered = allBooks
 	}
 
-	// Pagination - only if limit is explicitly provided
-	if limitStr == "" {
-		// No pagination requested, return all filtered results
-		return filtered
-	}
-
+	// Pagination
 	page := 1
-	limit := 10 // sensible default
-
+	limit := 10
 	if pageStr != "" {
 		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
 			page = p
 		}
 	}
-
-	if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
-		limit = l
+	if limitStr != "" {
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+			limit = l
+		}
 	}
 
 	start := (page - 1) * limit

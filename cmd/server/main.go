@@ -29,7 +29,7 @@ func main() {
 	//r.HandleFunc("/books", handler.CreateBook).Methods("POST")
 	r.Handle("/books", middleware.Auth(http.HandlerFunc(handler.GetBooks))).Methods("GET")
 
-	r.HandleFunc("/books", handler.GetBooks).Methods("GET")
+	//r.HandleFunc("/books", handler.GetBooks).Methods("GET")
 
 	r.HandleFunc("/books/{id}", handler.GetBookByID).Methods(http.MethodGet)
 	r.HandleFunc("/books/{id}", handler.UpdateBook).Methods(http.MethodPut)
