@@ -74,10 +74,20 @@ func (u *BookUsecase) GetByID(id int) (domain.Book, error) {
 }
 
 func (u *BookUsecase) Update(id int, title, author string, year int) (domain.Book, error) {
-	if title == "" || author == "" {
+	if strings.TrimSpace(title) == "" || strings.TrimSpace(author) == "" {
 		return domain.Book{}, errors.New("invalid input")
 	}
-	return u.repo.Update(id, domain.Book{Title: title, Author: author, Year: year})
+
+	book, err := u.repo.Update(id, domain.Book{Title: title, Author: author, Year: year})
+	if err != nil {
+		// propagate repository not found
+		if errors.Is(err, repository.ErrNotFound) {
+			return domain.Book{}, repository.ErrNotFound
+		}
+		return domain.Book{}, err
+	}
+
+	return book, nil
 }
 
 func (u *BookUsecase) Delete(id int) error {
