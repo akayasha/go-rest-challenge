@@ -91,7 +91,18 @@ func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.PathValue("id"))
+	vars := mux.Vars(r)
+	idStr, ok := vars["id"]
+	if !ok {
+		writeError(w, 404, "not found")
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		writeError(w, 400, "invalid id format")
+		return
+	}
 
 	book, err := h.usecase.GetByID(id)
 	if err != nil {
