@@ -1,0 +1,58 @@
+package main
+
+import (
+	"context"
+	"go-rest-challenge/internal/repository"
+	"go-rest-challenge/internal/usecase"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
+
+	"go-rest-challenge/internal/middleware"
+	httpTransport "go-rest-challenge/internal/transport/http"
+)
+
+func main() {
+	repo := repository.NewMemoryBookRepository(1024)
+	uc := usecase.NewBookUsecase(repo)
+	handler := httpTransport.NewHandler(uc)
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /ping", handler.Ping)
+	mux.HandleFunc("POST /echo", handler.Echo)
+	mux.HandleFunc("POST /auth/token", handler.Token)
+
+	mux.HandleFunc("POST /books", handler.CreateBook)
+	mux.Handle("GET /books", middleware.Auth(http.HandlerFunc(handler.GetBooks)))
+
+	mux.HandleFunc("GET /books/{id}", handler.GetBookByID)
+	mux.HandleFunc("PUT /books/{id}", handler.UpdateBook)
+	mux.HandleFunc("DELETE /books/{id}", handler.DeleteBook)
+
+	server := &http.Server{
+		Addr:              ":8080",
+		Handler:           mux,
+		ReadTimeout:       5 * time.Second,
+		WriteTimeout:      5 * time.Second,
+		IdleTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
+	}
+
+	go func() {
+		log.Println("Server running on :8080")
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatal(err)
+		}
+	}()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+	<-stop
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	server.Shutdown(ctx)
+}

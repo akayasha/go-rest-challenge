@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "Go API 8 Levels Challenge",
+    "_postman_id": "go-api-8-levels",
+    "description": "Full 8 level REST API test collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Ping",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/ping"
+      }
+    },
+    {
+      "name": "Echo",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"message\":\"hello\"}"
+        },
+        "url": "{{base_url}}/echo"
+      }
+    },
+    {
+      "name": "Create Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Go Book\",\"author\":\"Firman\"}"
+        },
+        "url": "{{base_url}}/books"
+      }
+    },
+    {
+      "name": "Get All Books",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/books"
+      }
+    },
+    {
+      "name": "Get Book By ID",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/books/{{book_id}}"
+      }
+    },
+    {
+      "name": "Update Book",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Updated\",\"author\":\"Updated\"}"
+        },
+        "url": "{{base_url}}/books/{{book_id}}"
+      }
+    },
+    {
+      "name": "Delete Book",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/books/{{book_id}}"
+      }
+    },
+    {
+      "name": "Search Author",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/books?author=Firman"
+      }
+    },
+    {
+      "name": "Pagination",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/books?page=1&limit=2"
+      }
+    }
+  ]
+}
