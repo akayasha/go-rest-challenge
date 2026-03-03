@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -25,12 +26,23 @@ func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 
 // Level 2
 func (h *Handler) Echo(w http.ResponseWriter, r *http.Request) {
-	var body map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		writeError(w, 400, "invalid body")
+	w.Header().Set("Content-Type", "application/json")
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error":"invalid body"}`))
 		return
 	}
-	writeJSON(w, 200, body)
+
+	// If empty body → return {}
+	if len(body) == 0 {
+		w.Write([]byte(`{}`))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
 }
 
 // Level 5
