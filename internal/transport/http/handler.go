@@ -127,7 +127,7 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Invalid input → 400
-		writeError(w, 400, err.Error())
+		//writeError(w, 400, err.Error())
 		return
 	}
 
