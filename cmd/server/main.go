@@ -19,7 +19,7 @@ func main() {
 	uc := usecase.NewBookUsecase(repo)
 	handler := httpTransport.NewHandler(uc)
 
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 
 	r.HandleFunc("/ping", handler.Ping).Methods("GET")
 	r.HandleFunc("/echo", handler.Echo).Methods("POST")
@@ -30,9 +30,10 @@ func main() {
 
 	r.HandleFunc("/books", handler.GetBooks).Methods("GET")
 
-	r.HandleFunc("/books/{id}", handler.GetBookByID).Methods("GET")
-	r.HandleFunc("/books/{id}", handler.UpdateBook).Methods("PUT")
-	r.HandleFunc("/books/{id}", handler.DeleteBook).Methods("DELETE")
+	bookRouter := r.PathPrefix("/books/{id}").Subrouter()
+	bookRouter.HandleFunc("", handler.GetBookByID).Methods(http.MethodGet)
+	bookRouter.HandleFunc("", handler.UpdateBook).Methods(http.MethodPut)
+	bookRouter.HandleFunc("", handler.DeleteBook).Methods(http.MethodDelete)
 
 	server := &http.Server{
 		Addr:              ":8099",
