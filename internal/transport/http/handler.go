@@ -104,7 +104,6 @@ func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
 
 // Level 4
 func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
-	// Get path variables from mux
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -118,16 +117,19 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		Year   int    `json:"year"`
 	}
 
+	// Decode request body
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		writeError(w, 400, "invalid body")
+		return
+	}
+
 	book, err := h.usecase.Update(id, input.Title, input.Author, input.Year)
 	if err != nil {
-		// If book does not exist → 404
 		if errors.Is(err, repository.ErrNotFound) {
 			writeError(w, 404, "not found")
 			return
 		}
-
-		// Invalid input → 400
-		//writeError(w, 400, err.Error())
+		writeError(w, 400, err.Error())
 		return
 	}
 
