@@ -82,8 +82,7 @@ func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
 		books = []domain.Book{}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(books)
+	writeJSON(w, 200, books)
 }
 
 func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
