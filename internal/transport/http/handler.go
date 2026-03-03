@@ -105,9 +105,15 @@ func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
 // Level 4
 func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	idStr, ok := vars["id"]
+	if !ok {
+		writeError(w, 404, "not found")
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		writeError(w, 400, "invalid id")
+		writeError(w, 400, "invalid id format")
 		return
 	}
 
@@ -117,7 +123,6 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		Year   int    `json:"year"`
 	}
 
-	// Decode request body
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		writeError(w, 400, "invalid body")
 		return
@@ -125,6 +130,7 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	book, err := h.usecase.Update(id, input.Title, input.Author, input.Year)
 	if err != nil {
+		// This check ensures that if the repo can't find the ID, we return 404
 		if errors.Is(err, repository.ErrNotFound) {
 			writeError(w, 404, "not found")
 			return
