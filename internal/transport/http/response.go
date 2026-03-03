@@ -6,10 +6,14 @@ import (
 )
 
 func writeJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	b, _ := json.Marshal(v)
-	w.Write(b)
+	data, err := json.Marshal(v)
+	if err != nil {
+		w.Write([]byte(`{"error":"internal error"}`))
+		return
+	}
+	w.Write(data)
 }
 
 func writeError(w http.ResponseWriter, status int, msg string) {
