@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/gorilla/mux"
+	"go-rest-challenge/internal/middleware"
 	"go-rest-challenge/internal/repository"
 	"go-rest-challenge/internal/usecase"
 	"log"
@@ -25,8 +26,8 @@ func main() {
 	r.HandleFunc("/echo", handler.Echo).Methods("POST")
 	r.HandleFunc("/auth/token", handler.Token).Methods("POST")
 
-	r.HandleFunc("/books", handler.CreateBook).Methods("POST")
-	//r.Handle("/books", middleware.Auth(http.HandlerFunc(handler.GetBooks))).Methods("GET")
+	//r.HandleFunc("/books", handler.CreateBook).Methods("POST")
+	r.Handle("/books", middleware.Auth(http.HandlerFunc(handler.GetBooks))).Methods("GET")
 
 	r.HandleFunc("/books", handler.GetBooks).Methods("GET")
 
