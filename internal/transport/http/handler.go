@@ -71,12 +71,16 @@ func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	author := r.URL.Query().Get("author")
 	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
 
-	result := h.usecase.GetAll(author, page, limit)
-	writeJSON(w, 200, result)
+	books := h.usecase.GetAll(author, page, limit)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(books)
 }
 
 func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
