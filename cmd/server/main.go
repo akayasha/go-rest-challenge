@@ -10,7 +10,6 @@ import (
 	"os/signal"
 	"time"
 
-	"go-rest-challenge/internal/middleware"
 	httpTransport "go-rest-challenge/internal/transport/http"
 )
 
@@ -26,7 +25,7 @@ func main() {
 	mux.HandleFunc("POST /auth/token", handler.Token)
 
 	mux.HandleFunc("POST /books", handler.CreateBook)
-	mux.Handle("GET /books", middleware.Auth(http.HandlerFunc(handler.GetBooks)))
+	mux.HandleFunc("GET /books", handler.GetBooks)
 
 	mux.HandleFunc("GET /books/{id}", handler.GetBookByID)
 	mux.HandleFunc("PUT /books/{id}", handler.UpdateBook)
