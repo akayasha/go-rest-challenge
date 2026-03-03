@@ -30,10 +30,9 @@ func main() {
 
 	r.HandleFunc("/books", handler.GetBooks).Methods("GET")
 
-	bookRouter := r.PathPrefix("/books/{id}").Subrouter()
-	bookRouter.HandleFunc("", handler.GetBookByID).Methods(http.MethodGet)
-	bookRouter.HandleFunc("", handler.UpdateBook).Methods(http.MethodPut)
-	bookRouter.HandleFunc("", handler.DeleteBook).Methods(http.MethodDelete)
+	r.HandleFunc("/books/{id}", handler.GetBookByID).Methods(http.MethodGet)
+	r.HandleFunc("/books/{id}", handler.UpdateBook).Methods(http.MethodPut)
+	r.HandleFunc("/books/{id}", handler.DeleteBook).Methods(http.MethodDelete)
 
 	server := &http.Server{
 		Addr:              ":8099",
