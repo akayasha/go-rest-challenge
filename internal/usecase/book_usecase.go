@@ -24,17 +24,26 @@ func (u *BookUsecase) Create(title, author string, year int) (domain.Book, error
 }
 
 func (u *BookUsecase) GetAll(author, pageStr, limitStr string) []domain.Book {
-	books := u.repo.GetAll()
+	allBooks := u.repo.GetAll()
+
+	// 1. Initialize 'books' as an empty slice (not nil)
+	books := []domain.Book{}
 
 	// filter
 	if author != "" {
-		filtered := make([]domain.Book, 0, len(books))
-		for _, b := range books {
+		for _, b := range allBooks {
 			if strings.EqualFold(b.Author, author) {
-				filtered = append(filtered, b)
+				books = append(books, b)
 			}
 		}
-		books = filtered
+	} else {
+		// If no filter, use all books
+		books = allBooks
+	}
+
+	// Ensure we don't return nil if repo.GetAll() returned nil
+	if books == nil {
+		books = []domain.Book{}
 	}
 
 	// pagination
@@ -43,11 +52,15 @@ func (u *BookUsecase) GetAll(author, pageStr, limitStr string) []domain.Book {
 
 	if page > 0 && limit > 0 {
 		start := (page - 1) * limit
-		end := start + limit
+		if start < 0 {
+			start = 0
+		} // Guard against weird math
 
 		if start >= len(books) {
-			return []domain.Book{}
+			return []domain.Book{} // Returns []
 		}
+
+		end := start + limit
 		if end > len(books) {
 			end = len(books)
 		}
