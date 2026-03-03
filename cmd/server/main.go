@@ -25,7 +25,7 @@ func main() {
 	r.HandleFunc("/echo", handler.Echo).Methods("POST")
 	r.HandleFunc("/auth/token", handler.Token).Methods("POST")
 
-	//r.HandleFunc("/books", handler.CreateBook).Methods("POST")
+	r.HandleFunc("/books", handler.CreateBook).Methods("POST")
 	//r.Handle("/books", middleware.Auth(http.HandlerFunc(handler.GetBooks))).Methods("GET")
 
 	r.HandleFunc("/books", handler.GetBooks).Methods("GET")
