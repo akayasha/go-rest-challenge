@@ -71,18 +71,22 @@ func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, 201, book)
 }
-
 func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
 	author := r.URL.Query().Get("author")
 	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
 
-	books := h.usecase.GetAll(author, page, limit)
+	// Force initialization to an empty slice immediately
+	books := []domain.Book{}
 
-	if books == nil {
-		books = []domain.Book{}
+	// Get results from usecase
+	result := h.usecase.GetAll(author, page, limit)
+
+	if len(result) > 0 {
+		books = result
 	}
 
+	// This ensures that even if 'result' was nil, 'books' is []
 	writeJSON(w, 200, books)
 }
 
