@@ -130,7 +130,6 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	book, err := h.usecase.Update(id, input.Title, input.Author, input.Year)
 	if err != nil {
-		// This check ensures that if the repo can't find the ID, we return 404
 		if errors.Is(err, repository.ErrNotFound) {
 			writeError(w, 404, "not found")
 			return
@@ -138,7 +137,6 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		writeError(w, 400, err.Error())
 		return
 	}
-
 	writeJSON(w, 200, book)
 }
 

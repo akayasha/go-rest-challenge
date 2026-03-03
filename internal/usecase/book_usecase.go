@@ -85,7 +85,7 @@ func (u *BookUsecase) Update(id int, title, author string, year int) (domain.Boo
 		return domain.Book{}, repository.ErrNotFound
 	}
 
-	// 3. Update book
+	// 3. Perform the update
 	return u.repo.Update(id, domain.Book{Title: title, Author: author, Year: year})
 }
 
