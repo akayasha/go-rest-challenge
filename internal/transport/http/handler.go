@@ -72,9 +72,6 @@ func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
 	author := r.URL.Query().Get("author")
 	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
@@ -85,6 +82,7 @@ func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
 		books = []domain.Book{}
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(books)
 }
 
