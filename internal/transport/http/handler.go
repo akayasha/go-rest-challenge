@@ -2,7 +2,9 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"go-rest-challenge/internal/domain"
+	"go-rest-challenge/internal/repository"
 	"io"
 	"net/http"
 	"strconv"
@@ -101,7 +103,11 @@ func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
 
 // Level 4
 func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.PathValue("id"))
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		writeError(w, 400, "invalid id")
+		return
+	}
 
 	var input struct {
 		Title  string `json:"title"`
@@ -116,6 +122,13 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	book, err := h.usecase.Update(id, input.Title, input.Author, input.Year)
 	if err != nil {
+
+		// 🔥 THIS IS THE IMPORTANT PART
+		if errors.Is(err, repository.ErrNotFound) {
+			writeError(w, 404, "not found")
+			return
+		}
+
 		writeError(w, 400, err.Error())
 		return
 	}

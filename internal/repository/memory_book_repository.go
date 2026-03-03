@@ -14,6 +14,8 @@ type BookRepository interface {
 	Delete(id int) error
 }
 
+var ErrNotFound = errors.New("not found")
+
 type MemoryBookRepository struct {
 	mu     sync.RWMutex
 	books  map[int]domain.Book
