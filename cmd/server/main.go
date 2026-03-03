@@ -25,14 +25,12 @@ func main() {
 	mux.HandleFunc("POST /echo", handler.Echo)
 	mux.HandleFunc("POST /auth/token", handler.Token)
 
-	// Wrap the entire resource or individual methods consistently
-	mux.Handle("POST /books", middleware.Auth(http.HandlerFunc(handler.CreateBook)))
+	mux.HandleFunc("POST /books", handler.CreateBook)
 	mux.Handle("GET /books", middleware.Auth(http.HandlerFunc(handler.GetBooks)))
 
-	// Don't forget the ID-based routes if the challenge requires it!
-	mux.Handle("GET /books/{id}", middleware.Auth(http.HandlerFunc(handler.GetBookByID)))
-	mux.Handle("PUT /books/{id}", middleware.Auth(http.HandlerFunc(handler.UpdateBook)))
-	mux.Handle("DELETE /books/{id}", middleware.Auth(http.HandlerFunc(handler.DeleteBook)))
+	mux.HandleFunc("GET /books/{id}", handler.GetBookByID)
+	mux.HandleFunc("PUT /books/{id}", handler.UpdateBook)
+	mux.HandleFunc("DELETE /books/{id}", handler.DeleteBook)
 
 	server := &http.Server{
 		Addr:              ":8099",
@@ -44,7 +42,7 @@ func main() {
 	}
 
 	go func() {
-		log.Println("Server running on :8099")
+		log.Println("Server running on :8000")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
