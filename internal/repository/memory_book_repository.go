@@ -55,7 +55,7 @@ func (r *MemoryBookRepository) GetByID(id int) (domain.Book, error) {
 
 	book, ok := r.books[id]
 	if !ok {
-		return domain.Book{}, errors.New("not found")
+		return domain.Book{}, ErrNotFound
 	}
 	return book, nil
 }
@@ -65,7 +65,7 @@ func (r *MemoryBookRepository) Update(id int, book domain.Book) (domain.Book, er
 	defer r.mu.Unlock()
 
 	if _, ok := r.books[id]; !ok {
-		return domain.Book{}, errors.New("not found")
+		return domain.Book{}, ErrNotFound
 	}
 
 	book.ID = id
@@ -78,7 +78,7 @@ func (r *MemoryBookRepository) Delete(id int) error {
 	defer r.mu.Unlock()
 
 	if _, ok := r.books[id]; !ok {
-		return errors.New("not found")
+		return ErrNotFound
 	}
 
 	delete(r.books, id)
